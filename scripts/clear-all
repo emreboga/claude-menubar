@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# clear-all - Remove all Claude Code session status files
+
+set -euo pipefail
+
+STATUS_DIR="${HOME}/.claude-menubar/status"
+
+if [[ -d "${STATUS_DIR}" ]]; then
+  # Remove all status JSON files (glob may expand to nothing — handle gracefully)
+  for f in "${STATUS_DIR}"/*.json; do
+    [[ -f "${f}" ]] && rm -f "${f}"
+  done
+fi

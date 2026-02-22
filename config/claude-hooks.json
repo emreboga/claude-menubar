@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set busy 'Session started'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status notify \"${CLAUDE_NOTIFICATION}\""
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status notify 'Permission requested'"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set idle 'Task completed'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set idle 'Session stopped'"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set error 'Tool use failed'"
+          }
+        ]
+      }
+    ]
+  }
+}

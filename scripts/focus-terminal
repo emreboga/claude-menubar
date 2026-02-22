@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# focus-terminal - Activate a terminal application and optionally cd to a path
+#
+# Usage: focus-terminal <terminal-app> <repo-path>
+#
+# Supported terminals: Terminal, iTerm, iTerm2, Warp, Alacritty, kitty,
+#                      Hyper, WezTerm, Ghostty
+
+set -euo pipefail
+
+TERMINAL="${1:-Terminal}"
+REPO_PATH="${2:-${HOME}}"
+
+# Escape REPO_PATH for safe embedding inside AppleScript double-quoted strings.
+# AppleScript string escapes: backslash → \\, double-quote → \"
+SAFE_PATH="${REPO_PATH//\\/\\\\}"
+SAFE_PATH="${SAFE_PATH//\"/\\\"}"
+case "${TERMINAL}" in
+  Warp)
+    osascript -e 'tell application "Warp" to activate'
+    ;;
+
+  iTerm|iTerm2)
+    osascript <<APPLESCRIPT
+tell application "iTerm2"
+  activate
+  if (count of windows) > 0 then
+    tell current window
+      tell current session
+        write text "cd \"${SAFE_PATH}\""
+      end tell
+    end tell
+  end if
+end tell
+APPLESCRIPT
+    ;;
+
+  Alacritty)
+    osascript -e 'tell application "Alacritty" to activate'
+    ;;
+
+  kitty)
+    osascript -e 'tell application "kitty" to activate'
+    ;;
+
+  Hyper)
+    osascript -e 'tell application "Hyper" to activate'
+    ;;
+
+  WezTerm)
+    osascript -e 'tell application "WezTerm" to activate'
+    ;;
+
+  Ghostty)
+    osascript -e 'tell application "Ghostty" to activate'
+    ;;
+
+  Terminal|*)
+    osascript <<APPLESCRIPT
+tell application "Terminal"
+  activate
+  do script "cd \"${SAFE_PATH}\""
+end tell
+APPLESCRIPT
+    ;;
+esac

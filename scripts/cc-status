@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# cc-status - Set or clear Claude Code session status
+#
+# Usage:
+#   cc-status set <state> [message]   Set session state
+#   cc-status clear                   Remove status file
+#   cc-status notify <message>        Set waiting + send macOS notification
+#
+# States: idle, busy, waiting, error
+#
+# The current working directory is used as the repo path unless
+# CLAUDE_REPO_PATH / CLAUDE_REPO_NAME are set in the environment.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Support both the installed location and the source tree.
+if [[ -f "${HOME}/.claude-menubar/lib/common.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "${HOME}/.claude-menubar/lib/common.sh"
+elif [[ -f "${SCRIPT_DIR}/../lib/common.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "${SCRIPT_DIR}/../lib/common.sh"
+else
+  printf 'ERROR: Cannot find common.sh\n' >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Resolve repo context
+# ---------------------------------------------------------------------------
+REPO_PATH="${CLAUDE_REPO_PATH:-${PWD}}"
+REPO_NAME="${CLAUDE_REPO_NAME:-$(basename "${REPO_PATH}")}"
+REPO_ID=$(get_repo_id "${REPO_PATH}")
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
+CMD="${1:-}"
+
+case "${CMD}" in
+  set)
+    STATE="${2:-idle}"
+    MESSAGE="${3:-}"
+    write_status "${REPO_ID}" "${REPO_NAME}" "${REPO_PATH}" "${STATE}" "${MESSAGE}"
+    log_message "${REPO_ID}" "State set to ${STATE}: ${MESSAGE}"
+    ;;
+
+  clear)
+    rm -f "${STATUS_DIR}/${REPO_ID}.json"
+    log_message "${REPO_ID}" "Status cleared"
+    ;;
+
+  notify)
+    MESSAGE="${2:-Needs your attention}"
+    write_status "${REPO_ID}" "${REPO_NAME}" "${REPO_PATH}" "waiting" "${MESSAGE}"
+    log_message "${REPO_ID}" "Notification: ${MESSAGE}"
+    # Send macOS notification (no-op on non-macOS systems).
+    # Escape backslashes and double-quotes before embedding in AppleScript strings.
+    if command -v osascript &>/dev/null; then
+      local safe_msg safe_name
+      safe_msg="${MESSAGE//\\/\\\\}"; safe_msg="${safe_msg//\"/\\\"}"
+      safe_name="${REPO_NAME//\\/\\\\}"; safe_name="${safe_name//\"/\\\"}"
+      osascript -e "display notification \"${safe_msg}\" with title \"Claude Code\" subtitle \"${safe_name}\""
+    fi
+    ;;
+
+  *)
+    cat >&2 <<'EOF'
+Usage: cc-status set <state> [message]
+       cc-status clear
+       cc-status notify <message>
+
+States: idle, busy, waiting, error
+EOF
+    exit 1
+    ;;
+esac
