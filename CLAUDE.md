@@ -20,8 +20,8 @@ Claude Code Hook → cc-status CLI → writes JSON → SwiftBar reads → menuba
 | `scripts/focus-terminal` | AppleScript wrapper to activate terminal apps |
 | `scripts/clear-all` | Removes all status files |
 | `config/claude-hooks.json` | Hook definitions merged into ~/.claude/settings.json |
-| `install.sh` | Installs to ~/.claude-menubar, merges hooks |
-| `uninstall.sh` | Removes ~/.claude-menubar |
+| `setup.sh` | Installs to ~/.claude-menubar, merges hooks |
+| `unsetup.sh` | Removes ~/.claude-menubar |
 
 ### Runtime Directories
 
@@ -87,7 +87,7 @@ brew install claude-menubar
 
 The formula:
 1. Installs source to Homebrew's pkgshare
-2. Auto-runs install.sh during brew install
+2. Auto-runs setup.sh during brew install
 3. Creates SwiftBar plugins directory and symlinks plugin
 
 ## Development Notes

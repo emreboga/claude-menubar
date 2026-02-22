@@ -23,7 +23,7 @@ Multiple sessions show multiple dots sorted by repository name.
 ## Installation
 
 ```bash
-bash install.sh --terminal Warp
+bash setup.sh --terminal Warp
 ```
 
 Then symlink the plugin into your SwiftBar plugins folder:
@@ -42,7 +42,7 @@ Restart Claude Code to pick up the new hooks.
 ## Uninstallation
 
 ```bash
-bash uninstall.sh
+bash unsetup.sh
 ```
 
 This removes `~/.claude-menubar`. Remove any SwiftBar symlink and Claude Code hooks manually.
@@ -50,8 +50,8 @@ This removes `~/.claude-menubar`. Remove any SwiftBar symlink and Claude Code ho
 ## Directory Structure
 
 ```
-install.sh                    Installer
-uninstall.sh                  Uninstaller
+setup.sh                    Installer
+unsetup.sh                  Uninstaller
 lib/common.sh                 Shared bash functions
 scripts/cc-status             CLI: set/clear session status
 scripts/claude-menubar.10s.sh SwiftBar plugin (10 s refresh)
@@ -88,7 +88,7 @@ logs/           Session logs (rotated at 100 KB)
 
 ## Claude Code Hooks
 
-The following hooks are configured automatically by `install.sh`:
+The following hooks are configured automatically by `setup.sh`:
 
 | Hook           | Action                                |
 |----------------|---------------------------------------|
