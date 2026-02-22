@@ -3,7 +3,7 @@
 #
 # Usage: bash setup.sh [--terminal <app>]
 #
-# Supported terminals: Terminal (default), iTerm, iTerm2, Warp, Alacritty,
+# Supported terminals: Terminal, iTerm, iTerm2, Warp, Alacritty,
 #                      kitty, Hyper, WezTerm, Ghostty
 
 set -euo pipefail
@@ -12,7 +12,12 @@ INSTALL_DIR="${HOME}/.claude-menubar"
 CLAUDE_SETTINGS="${HOME}/.claude/settings.json"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-TERMINAL="Terminal"
+# Source common.sh to get detect_terminal function
+# shellcheck source=/dev/null
+source "${SOURCE_DIR}/lib/common.sh"
+
+# Auto-detect terminal from TERM_PROGRAM, can be overridden with --terminal
+TERMINAL="$(detect_terminal)"
 
 # ---------------------------------------------------------------------------
 # Argument parsing
