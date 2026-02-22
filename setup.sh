@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# install.sh - Install claude-menubar to ~/.claude-menubar
+# setup.sh - Set up claude-menubar in ~/.claude-menubar
 #
-# Usage: bash install.sh [--terminal <app>]
+# Usage: bash setup.sh [--terminal <app>]
 #
 # Supported terminals: Terminal (default), iTerm, iTerm2, Warp, Alacritty,
 #                      kitty, Hyper, WezTerm, Ghostty
@@ -25,16 +25,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     -h|--help)
       cat <<'EOF'
-Usage: bash install.sh [--terminal <app>]
+Usage: claude-menubar-setup [--terminal <app>]
 
 Options:
-  --terminal <app>   Terminal to use for session focus (default: Terminal)
+  --terminal <app>   Terminal to use for session focus (default: auto-detected)
                      Supported: Terminal, iTerm, iTerm2, Warp, Alacritty,
                                 kitty, Hyper, WezTerm, Ghostty
-
-After installation:
-  ln -s ~/.claude-menubar/bin/claude-menubar.10s.sh \
-        ~/Library/Application\ Support/SwiftBar/Plugins/
 EOF
       exit 0
       ;;
@@ -45,7 +41,7 @@ EOF
   esac
 done
 
-printf 'Installing claude-menubar to %s ...\n' "${INSTALL_DIR}"
+printf 'Setting up claude-menubar in %s ...\n' "${INSTALL_DIR}"
 
 # ---------------------------------------------------------------------------
 # Create directory structure
@@ -113,12 +109,27 @@ merge_hooks() {
 merge_hooks
 
 # ---------------------------------------------------------------------------
+# Create SwiftBar plugin symlink
+# ---------------------------------------------------------------------------
+SWIFTBAR_PLUGINS="${HOME}/Library/Application Support/SwiftBar/Plugins"
+mkdir -p "${SWIFTBAR_PLUGINS}"
+
+PLUGIN_LINK="${SWIFTBAR_PLUGINS}/claude-menubar.10s.sh"
+PLUGIN_TARGET="${INSTALL_DIR}/bin/claude-menubar.10s.sh"
+
+if [[ -L "${PLUGIN_LINK}" ]]; then
+  printf 'SwiftBar plugin symlink already exists\n'
+elif [[ -e "${PLUGIN_LINK}" ]]; then
+  printf 'WARNING: %s exists but is not a symlink\n' "${PLUGIN_LINK}" >&2
+else
+  ln -s "${PLUGIN_TARGET}" "${PLUGIN_LINK}"
+  printf 'Created SwiftBar plugin symlink\n'
+fi
+
+# ---------------------------------------------------------------------------
 # Done
 # ---------------------------------------------------------------------------
-printf '\nInstallation complete!\n\n'
+printf '\nSetup complete!\n\n'
 printf 'Next steps:\n'
-printf '  1. Symlink the SwiftBar plugin:\n'
-printf '     ln -s %s/bin/claude-menubar.10s.sh \\\n' "${INSTALL_DIR}"
-printf '           ~/Library/Application\\ Support/SwiftBar/Plugins/\n'
-printf '  2. Restart Claude Code to load the new hooks.\n'
-printf '  3. Enjoy your menubar status!\n'
+printf '  1. Install SwiftBar if not installed: brew install --cask swiftbar\n'
+printf '  2. Restart Claude Code to load the hooks\n'
