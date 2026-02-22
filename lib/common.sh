@@ -97,6 +97,25 @@ json_get_num() {
 }
 
 # ---------------------------------------------------------------------------
+# Terminal detection from TERM_PROGRAM environment variable
+# ---------------------------------------------------------------------------
+detect_terminal() {
+  local term_program="${TERM_PROGRAM:-}"
+  case "${term_program}" in
+    Apple_Terminal)  printf 'Terminal' ;;
+    iTerm.app)       printf 'iTerm2' ;;
+    WarpTerminal)    printf 'Warp' ;;
+    vscode)          printf 'VSCode' ;;
+    Hyper)           printf 'Hyper' ;;
+    alacritty)       printf 'Alacritty' ;;
+    kitty)           printf 'kitty' ;;
+    WezTerm)         printf 'WezTerm' ;;
+    ghostty)         printf 'Ghostty' ;;
+    *)               printf 'Terminal' ;;  # fallback
+  esac
+}
+
+# ---------------------------------------------------------------------------
 # Status file I/O
 # ---------------------------------------------------------------------------
 
@@ -107,16 +126,18 @@ write_status() {
   local path="${3}"
   local state="${4}"
   local message="${5:-}"
-  local pid="${6:-$$}"
+  local terminal="${6:-$(detect_terminal)}"
+  local pid="${7:-$$}"
   local ts
   ts=$(date +%s)
 
   mkdir -p "${STATUS_DIR}"
 
-  local repo_esc path_esc msg_esc
+  local repo_esc path_esc msg_esc term_esc
   repo_esc=$(json_escape "${repo}")
   path_esc=$(json_escape "${path}")
   msg_esc=$(json_escape "${message}")
+  term_esc=$(json_escape "${terminal}")
 
   cat > "${STATUS_DIR}/${id}.json" <<EOF
 {
@@ -125,6 +146,7 @@ write_status() {
   "path": "${path_esc}",
   "state": "${state}",
   "message": "${msg_esc}",
+  "terminal": "${term_esc}",
   "pid": ${pid},
   "ts": ${ts}
 }

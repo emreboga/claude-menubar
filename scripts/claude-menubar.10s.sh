@@ -57,6 +57,7 @@ ALL_REPOS=()
 ALL_PATHS=()
 ALL_STATES=()
 ALL_MESSAGES=()
+ALL_TERMINALS=()
 ALL_TSS=()
 
 if [[ -d "${STATUS_DIR}" ]]; then
@@ -68,6 +69,7 @@ if [[ -d "${STATUS_DIR}" ]]; then
     path=$(json_get "${content}" "path")
     state=$(json_get "${content}" "state")
     message=$(json_get "${content}" "message")
+    terminal=$(json_get "${content}" "terminal")
     ts=$(json_get_num "${content}" "ts")
 
     # Mark as stale if busy/waiting and inactive for ≥ 10 minutes
@@ -77,11 +79,17 @@ if [[ -d "${STATUS_DIR}" ]]; then
       fi
     fi
 
+    # Fallback to configured terminal if not stored in session
+    if [[ -z "${terminal}" ]]; then
+      terminal=$(get_terminal)
+    fi
+
     ALL_IDS[${#ALL_IDS[@]}]="${id}"
     ALL_REPOS[${#ALL_REPOS[@]}]="${repo}"
     ALL_PATHS[${#ALL_PATHS[@]}]="${path}"
     ALL_STATES[${#ALL_STATES[@]}]="${state}"
     ALL_MESSAGES[${#ALL_MESSAGES[@]}]="${message}"
+    ALL_TERMINALS[${#ALL_TERMINALS[@]}]="${terminal}"
     ALL_TSS[${#ALL_TSS[@]}]="${ts}"
   done
 fi
@@ -98,6 +106,7 @@ if [[ ${COUNT} -gt 1 ]]; then
         tmp="${ALL_STATES[$j]}";    ALL_STATES[$j]="${ALL_STATES[$((j+1))]}";    ALL_STATES[$((j+1))]="${tmp}"
         tmp="${ALL_PATHS[$j]}";     ALL_PATHS[$j]="${ALL_PATHS[$((j+1))]}";     ALL_PATHS[$((j+1))]="${tmp}"
         tmp="${ALL_MESSAGES[$j]}";  ALL_MESSAGES[$j]="${ALL_MESSAGES[$((j+1))]}"; ALL_MESSAGES[$((j+1))]="${tmp}"
+        tmp="${ALL_TERMINALS[$j]}"; ALL_TERMINALS[$j]="${ALL_TERMINALS[$((j+1))]}"; ALL_TERMINALS[$((j+1))]="${tmp}"
         tmp="${ALL_IDS[$j]}";       ALL_IDS[$j]="${ALL_IDS[$((j+1))]}";         ALL_IDS[$((j+1))]="${tmp}"
         tmp="${ALL_TSS[$j]}";       ALL_TSS[$j]="${ALL_TSS[$((j+1))]}";         ALL_TSS[$((j+1))]="${tmp}"
       fi
@@ -128,8 +137,6 @@ echo "---"
 # ---------------------------------------------------------------------------
 # Dropdown: one entry per session
 # ---------------------------------------------------------------------------
-TERMINAL=$(get_terminal)
-
 if [[ ${COUNT} -eq 0 ]]; then
   echo "No active Claude Code sessions | color=#6b7280"
 else
@@ -138,9 +145,10 @@ else
     state="${ALL_STATES[$i]}"
     path="${ALL_PATHS[$i]}"
     message="${ALL_MESSAGES[$i]}"
+    terminal="${ALL_TERMINALS[$i]}"
     dot=$(state_dot "${state}")
     color=$(state_color "${state}")
-    echo "${dot} ${repo} (${state}) | bash=${BIN_DIR}/focus-terminal param1=${TERMINAL} param2=${path} terminal=false refresh=false color=${color}"
+    echo "${dot} ${repo} (${state}) | bash=${BIN_DIR}/focus-terminal param1=${terminal} param2=${path} terminal=false refresh=false color=${color}"
     if [[ -n "${message}" ]]; then
       echo "  ↳ ${message} | color=${color} size=11"
     fi
