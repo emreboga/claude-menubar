@@ -2,20 +2,32 @@
   "hooks": {
     "SessionStart": [
       {
-        "type": "command",
-        "command": "~/.claude-menubar/bin/cc-status set busy 'Session started'"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set busy 'Session started'"
+          }
+        ]
       }
     ],
     "Notification": [
       {
-        "type": "command",
-        "command": "~/.claude-menubar/bin/cc-status notify \"${CLAUDE_NOTIFICATION}\""
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status notify \"${CLAUDE_NOTIFICATION}\""
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "type": "command",
-        "command": "~/.claude-menubar/bin/cc-status set idle 'Session stopped'"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude-menubar/bin/cc-status set idle 'Session stopped'"
+          }
+        ]
       }
     ]
   }
