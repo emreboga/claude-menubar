@@ -16,42 +16,74 @@ Multiple sessions show multiple dots sorted by repository name.
 
 ## Requirements
 
-- macOS with [SwiftBar](https://github.com/swiftbar/SwiftBar) installed
+- macOS
+- [SwiftBar](https://github.com/swiftbar/SwiftBar)
 - bash (3.x or later — the macOS default)
-- `jq` (optional — only needed for automatic hooks merging during install)
+- `jq` (optional — for automatic hooks merging)
 
 ## Installation
 
-```bash
-bash setup.sh --terminal Warp
-```
-
-Then symlink the plugin into your SwiftBar plugins folder:
+### Via Homebrew (Recommended)
 
 ```bash
-ln -s ~/.claude-menubar/bin/claude-menubar.10s.sh \
-      ~/Library/Application\ Support/SwiftBar/Plugins/
+# Install SwiftBar if not already installed
+brew install --cask swiftbar
+
+# Install claude-menubar
+brew tap emreboga/tools
+brew install claude-menubar
+
+# Run setup (auto-detects your terminal)
+claude-menubar-setup
 ```
 
-Restart Claude Code to pick up the new hooks.
+### Manual Installation
 
-### Supported terminals
+```bash
+git clone https://github.com/emreboga/claude-menubar.git
+cd claude-menubar
+bash setup.sh
+```
 
-`Terminal` (default), `iTerm`, `iTerm2`, `Warp`, `Alacritty`, `kitty`, `Hyper`, `WezTerm`, `Ghostty`
+### After Installation
+
+1. **Start SwiftBar** if not running
+2. **Restart Claude Code** to load the hooks
+3. You should see a dashed circle (⊙) in your menubar
+
+### Supported Terminals
+
+Terminal is auto-detected from `TERM_PROGRAM`. You can override with:
+
+```bash
+claude-menubar-setup --terminal Warp
+```
+
+Supported: `Terminal`, `iTerm`, `iTerm2`, `Warp`, `Alacritty`, `kitty`, `Hyper`, `WezTerm`, `Ghostty`
 
 ## Uninstallation
 
+### Via Homebrew
+
 ```bash
-bash unsetup.sh
+claude-menubar-uninstall
+brew uninstall claude-menubar
+brew untap emreboga/tools
 ```
 
-This removes `~/.claude-menubar`. Remove any SwiftBar symlink and Claude Code hooks manually.
+### Manual
+
+```bash
+bash uninstall.sh
+```
+
+This removes `~/.claude-menubar`. You may also need to remove Claude Code hooks from `~/.claude/settings.json` manually.
 
 ## Directory Structure
 
 ```
-setup.sh                    Installer
-unsetup.sh                  Uninstaller
+setup.sh                      Setup script
+uninstall.sh                  Uninstall script
 lib/common.sh                 Shared bash functions
 scripts/cc-status             CLI: set/clear session status
 scripts/claude-menubar.10s.sh SwiftBar plugin (10 s refresh)
