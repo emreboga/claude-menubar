@@ -75,13 +75,14 @@ logs/           Session logs (rotated at 100 KB)
 
 ```json
 {
-  "id":      "<12-char sha256 hash of repo path>",
-  "repo":    "<basename>",
-  "path":    "<full path>",
-  "state":   "idle|busy|waiting|error",
-  "message": "<description>",
-  "pid":     12345,
-  "ts":      1700000000
+  "id":       "<12-char sha256 hash of repo path>",
+  "repo":     "<basename>",
+  "path":     "<full path>",
+  "state":    "idle|busy|waiting|error",
+  "message":  "<description>",
+  "terminal": "<detected terminal app>",
+  "pid":      12345,
+  "ts":       1700000000
 }
 ```
 
@@ -89,14 +90,11 @@ logs/           Session logs (rotated at 100 KB)
 
 The following hooks are configured automatically by `install.sh`:
 
-| Hook               | Action                                |
-|--------------------|---------------------------------------|
-| `SessionStart`     | Set state → **busy**                  |
-| `Notification`     | Set state → **waiting** + macOS alert |
-| `PermissionRequest`| Set state → **waiting** + macOS alert |
-| `TaskCompleted`    | Set state → **idle**                  |
-| `Stop`             | Set state → **idle**                  |
-| `PostToolUseFailure` | Set state → **error**              |
+| Hook           | Action                                |
+|----------------|---------------------------------------|
+| `SessionStart` | Set state → **busy**                  |
+| `Notification` | Set state → **waiting** + macOS alert |
+| `Stop`         | Set state → **idle**                  |
 
 ## Session Management
 
@@ -110,3 +108,7 @@ The following hooks are configured automatically by `install.sh`:
 ```bash
 bash tests/test-cc-status.sh
 ```
+
+## TODO
+
+- [ ] **Tab-level focusing**: When clicking a session, focus the exact window/tab where Claude Code is running (not just the terminal app). iTerm2 supports this via `$ITERM_SESSION_ID`. Warp and other terminals need investigation.
