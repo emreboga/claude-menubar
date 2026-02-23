@@ -1,37 +1,32 @@
-# Claude Code Context: claude-menubar
-
-## Overview
-
-A macOS SwiftBar plugin that displays Claude Code session status in the menubar. Shows colored dots indicating session state (busy, idle, waiting, error) and allows clicking to focus the terminal where the session is running.
+# claude-menubar
 
 ## Architecture
 
 ```
-Claude Code Hook → cc-status CLI → writes JSON → SwiftBar reads → menubar updates
+Claude Code Hook → cc-status CLI → writes JSON → SwiftBar reads every 5s → menubar updates
 ```
 
 ### Key Components
 
 | File | Purpose |
 |------|---------|
-| `lib/common.sh` | Shared bash functions: JSON helpers, state colors, terminal detection, status I/O |
 | `scripts/cc-status` | CLI for setting/clearing session status. Called by Claude Code hooks |
-| `scripts/claude-menubar.5s.sh` | SwiftBar plugin that runs every 5s, reads status files, renders menubar |
-| `scripts/focus-terminal` | AppleScript wrapper to activate terminal apps |
+| `scripts/claude-menubar.5s.sh` | SwiftBar plugin. Reads status files, renders menubar |
+| `scripts/focus-terminal` | AppleScript wrapper to activate terminal apps. Clears session status on click |
 | `scripts/clear-all` | Removes all status files |
-| `config/claude-hooks.json` | Hook definitions merged into ~/.claude/settings.json |
-| `setup.sh` | Installs to ~/.claude-menubar, merges hooks |
-| `unsetup.sh` | Removes ~/.claude-menubar |
+| `lib/common.sh` | Shared bash functions: JSON helpers, state colors, terminal detection, status I/O |
+| `config/claude-hooks.json` | Hook definitions merged into `~/.claude/settings.json` |
+| `setup.sh` | Installs to `~/.claude-menubar`, merges hooks, creates SwiftBar symlink |
+| `uninstall.sh` | Removes `~/.claude-menubar` and SwiftBar symlink |
 
-### Runtime Directories
+### Runtime Directory (`~/.claude-menubar/`)
 
-All runtime files are in `~/.claude-menubar/`:
-- `status/*.json` - Per-session status files (keyed by 12-char SHA256 of repo path)
-- `logs/*.log` - Session logs (100KB rotation)
-- `config.json` - User preferences (terminal app)
-- `bin/`, `lib/` - Installed scripts
+- `status/*.json` — Per-session status files (keyed by 12-char SHA256 of repo path)
+- `logs/*.log` — Session logs (100KB rotation)
+- `config.json` — User config (terminal app)
+- `bin/`, `lib/` — Installed scripts
 
-### Status JSON Structure
+### Status JSON
 
 ```json
 {
@@ -46,59 +41,28 @@ All runtime files are in `~/.claude-menubar/`:
 }
 ```
 
-### Terminal Detection
-
-Terminal app is auto-detected from `TERM_PROGRAM` env var:
-- `WarpTerminal` → Warp
-- `Apple_Terminal` → Terminal
-- `iTerm.app` → iTerm2
-- `vscode` → VSCode
-- etc.
-
 ### Claude Code Hooks
 
-Configured in `~/.claude/settings.json`:
-- `SessionStart` → sets state to "busy"
-- `Notification` → sets state to "waiting" + macOS notification
-- `Stop` → sets state to "idle"
-
-Hook structure requires nested `hooks` array:
+Hook structure in `~/.claude/settings.json`:
 ```json
 {
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          { "type": "command", "command": "~/.claude-menubar/bin/cc-status set busy" }
-        ]
-      }
-    ]
+    "SessionStart": [{ "hooks": [{ "type": "command", "command": "~/.claude-menubar/bin/cc-status set busy 'Session started'" }] }],
+    "Notification": [{ "hooks": [{ "type": "command", "command": "~/.claude-menubar/bin/cc-status notify" }] }],
+    "Stop":         [{ "hooks": [{ "type": "command", "command": "~/.claude-menubar/bin/cc-status set idle 'Session stopped'" }] }]
   }
 }
 ```
 
 ## Homebrew Distribution
 
-Distributed via `emreboga/homebrew-tools` tap:
-```sh
-brew tap emreboga/tools
-brew install claude-menubar
-```
-
-The formula:
-1. Installs source to Homebrew's pkgshare
-2. Auto-runs setup.sh during brew install
-3. Creates SwiftBar plugins directory and symlinks plugin
+Distributed via `emreboga/homebrew-tools` tap. The formula installs source to Homebrew's pkgshare and creates wrapper scripts (`claude-menubar-setup`, `claude-menubar-uninstall`). User runs `claude-menubar-setup` after install.
 
 ## Development Notes
 
-- **Bash 3 compatible**: Uses indexed arrays, no associative arrays
-- **No jq at runtime**: JSON parsing via grep/sed (jq only for install-time hook merging)
-- **5-second refresh**: Plugin filename `*.5s.sh` sets SwiftBar refresh interval
-- **Stale detection**: Sessions busy/waiting >10 min marked as stale (red dot)
-- **Auto-cleanup**: Status files >24 hours old are deleted
-
-## Known Limitations
-
-- Tab-level focusing not implemented (TODO in README)
-- Some hook types (TaskCompleted, PermissionRequest, PostToolUseFailure) not yet supported by Claude Code
+- **Bash 3 compatible** — indexed arrays only, no associative arrays
+- **No jq at runtime** — JSON parsing via grep/sed (jq only for install-time hook merging)
+- **5-second refresh** — set by plugin filename (`*.5s.sh`)
+- **Stale detection** — sessions busy/waiting >10 min marked stale
+- **Auto-cleanup** — status files >24 hours old are deleted
+- **Click to clear** — clicking a session removes its status file and refreshes the menubar
