@@ -40,10 +40,10 @@ if [[ -f "${CLAUDE_SETTINGS}" ]] && command -v jq &>/dev/null; then
     # Only remove the key if every command in it references cc-status
     has_ours=$(printf '%s' "${updated}" \
       | jq -e ".hooks.${key} // empty | .[].hooks[]
-               | select(.command | contains(\"cc-status\"))" 2>/dev/null)
+               | select(.command | contains(\"cc-status\"))" 2>/dev/null || true)
     has_others=$(printf '%s' "${updated}" \
       | jq -e ".hooks.${key} // empty | .[].hooks[]
-               | select(.command | contains(\"cc-status\") | not)" 2>/dev/null)
+               | select(.command | contains(\"cc-status\") | not)" 2>/dev/null || true)
 
     if [[ -n "${has_ours}" && -z "${has_others}" ]]; then
       updated=$(printf '%s' "${updated}" | jq "del(.hooks.${key})")
