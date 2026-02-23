@@ -10,7 +10,7 @@
 # <xbar.hideDisablePlugin>true</xbar.hideDisablePlugin>
 # <xbar.hideSwiftBar>false</xbar.hideSwiftBar>
 #
-# claude-menubar.10s.sh - SwiftBar plugin for Claude Code (refreshes every 10 s)
+# claude-menubar.5s.sh - SwiftBar plugin for Claude Code (refreshes every 5 s)
 
 set -euo pipefail
 
@@ -148,7 +148,8 @@ else
     terminal="${ALL_TERMINALS[$i]}"
     dot=$(state_dot "${state}")
     color=$(state_color "${state}")
-    echo "${dot} ${repo} (${state}) | bash=${BIN_DIR}/focus-terminal param1=${terminal} param2=${path} terminal=false refresh=false color=${color}"
+    id="${ALL_IDS[$i]}"
+    echo "${dot} ${repo} (${state}) | bash=${BIN_DIR}/focus-terminal param1=${terminal} param2=${path} param3=${id} terminal=false refresh=true color=${color}"
     if [[ -n "${message}" ]]; then
       echo "  ↳ ${message} | color=${color} size=11"
     fi
@@ -156,6 +157,5 @@ else
 fi
 
 echo "---"
-echo "Clear ALL | bash=${BIN_DIR}/clear-all terminal=false refresh=true"
-echo "---"
+echo "Clear | bash=${BIN_DIR}/clear-all terminal=false refresh=true"
 echo "Refresh | refresh=true"

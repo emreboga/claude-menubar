@@ -86,7 +86,7 @@ setup.sh                      Setup script
 uninstall.sh                  Uninstall script
 lib/common.sh                 Shared bash functions
 scripts/cc-status             CLI: set/clear session status
-scripts/claude-menubar.10s.sh SwiftBar plugin (10 s refresh)
+scripts/claude-menubar.5s.sh  SwiftBar plugin (5 s refresh)
 scripts/clear-all             Remove all status files
 scripts/focus-terminal        Activate terminal app via AppleScript
 config/claude-hooks.json      Claude Code hooks template

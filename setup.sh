@@ -62,7 +62,7 @@ mkdir -p "${INSTALL_DIR}/logs"
 cp "${SOURCE_DIR}/lib/common.sh" "${INSTALL_DIR}/lib/common.sh"
 
 cp "${SOURCE_DIR}/scripts/cc-status"              "${INSTALL_DIR}/bin/cc-status"
-cp "${SOURCE_DIR}/scripts/claude-menubar.10s.sh"  "${INSTALL_DIR}/bin/claude-menubar.10s.sh"
+cp "${SOURCE_DIR}/scripts/claude-menubar.5s.sh"  "${INSTALL_DIR}/bin/claude-menubar.5s.sh"
 cp "${SOURCE_DIR}/scripts/clear-all"              "${INSTALL_DIR}/bin/clear-all"
 cp "${SOURCE_DIR}/scripts/focus-terminal"         "${INSTALL_DIR}/bin/focus-terminal"
 
@@ -119,8 +119,8 @@ merge_hooks
 SWIFTBAR_PLUGINS="${HOME}/Library/Application Support/SwiftBar/Plugins"
 mkdir -p "${SWIFTBAR_PLUGINS}"
 
-PLUGIN_LINK="${SWIFTBAR_PLUGINS}/claude-menubar.10s.sh"
-PLUGIN_TARGET="${INSTALL_DIR}/bin/claude-menubar.10s.sh"
+PLUGIN_LINK="${SWIFTBAR_PLUGINS}/claude-menubar.5s.sh"
+PLUGIN_TARGET="${INSTALL_DIR}/bin/claude-menubar.5s.sh"
 
 if [[ -L "${PLUGIN_LINK}" ]]; then
   printf 'SwiftBar plugin symlink already exists\n'

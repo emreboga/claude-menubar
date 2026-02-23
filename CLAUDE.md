@@ -16,7 +16,7 @@ Claude Code Hook → cc-status CLI → writes JSON → SwiftBar reads → menuba
 |------|---------|
 | `lib/common.sh` | Shared bash functions: JSON helpers, state colors, terminal detection, status I/O |
 | `scripts/cc-status` | CLI for setting/clearing session status. Called by Claude Code hooks |
-| `scripts/claude-menubar.10s.sh` | SwiftBar plugin that runs every 10s, reads status files, renders menubar |
+| `scripts/claude-menubar.5s.sh` | SwiftBar plugin that runs every 5s, reads status files, renders menubar |
 | `scripts/focus-terminal` | AppleScript wrapper to activate terminal apps |
 | `scripts/clear-all` | Removes all status files |
 | `config/claude-hooks.json` | Hook definitions merged into ~/.claude/settings.json |
@@ -94,7 +94,7 @@ The formula:
 
 - **Bash 3 compatible**: Uses indexed arrays, no associative arrays
 - **No jq at runtime**: JSON parsing via grep/sed (jq only for install-time hook merging)
-- **10-second refresh**: Plugin filename `*.10s.sh` sets SwiftBar refresh interval
+- **5-second refresh**: Plugin filename `*.5s.sh` sets SwiftBar refresh interval
 - **Stale detection**: Sessions busy/waiting >10 min marked as stale (red dot)
 - **Auto-cleanup**: Status files >24 hours old are deleted
 

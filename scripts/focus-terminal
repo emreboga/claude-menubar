@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # focus-terminal - Activate a terminal application and optionally cd to a path
 #
-# Usage: focus-terminal <terminal-app> <repo-path>
+# Usage: focus-terminal <terminal-app> <repo-path> [session-id]
+#
+# If session-id is provided, the corresponding status file is removed
+# so the menubar clears after clicking.
 #
 # Supported terminals: Terminal, iTerm, iTerm2, Warp, Alacritty, kitty,
 #                      Hyper, WezTerm, Ghostty
@@ -10,6 +13,13 @@ set -euo pipefail
 
 TERMINAL="${1:-Terminal}"
 REPO_PATH="${2:-${HOME}}"
+SESSION_ID="${3:-}"
+
+# Clear the session status file when clicked
+if [[ -n "${SESSION_ID}" ]]; then
+  STATUS_DIR="${HOME}/.claude-menubar/status"
+  rm -f "${STATUS_DIR}/${SESSION_ID}.json"
+fi
 
 # Escape REPO_PATH for safe embedding inside AppleScript double-quoted strings.
 # AppleScript string escapes: backslash → \\, double-quote → \"

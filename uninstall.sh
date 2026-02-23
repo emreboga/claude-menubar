@@ -14,6 +14,13 @@ else
   printf '%s not found — nothing to remove.\n' "${INSTALL_DIR}"
 fi
 
+SWIFTBAR_PLUGINS="${HOME}/Library/Application Support/SwiftBar/Plugins"
+PLUGIN_LINK="${SWIFTBAR_PLUGINS}/claude-menubar.5s.sh"
+
+if [[ -L "${PLUGIN_LINK}" ]]; then
+  rm -f "${PLUGIN_LINK}"
+  printf 'Removed SwiftBar plugin symlink\n'
+fi
+
 printf '\nNOTE: Hooks in ~/.claude/settings.json were NOT removed.\n'
-printf 'Remove them manually if they are no longer needed.\n\n'
-printf 'Also remove any SwiftBar plugin symlink you created.\n'
+printf 'Remove them manually if they are no longer needed.\n'
